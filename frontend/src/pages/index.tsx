@@ -1,114 +1,82 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+"use client";
+import React, { useEffect, useState } from "react";
+import StatsCard from "@/components/StatsCard";
+import { useRequests } from "@/hooks/useRequests";
+import { RequestObject } from "@/types/request";
+import RequestCard from "@/components/RequestCard";
+import Link from "next/link";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const RequestList = () => {
+  const { data, loading, error } = useRequests();
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  const [openRequest, setOpenRequest] = useState([]);
+  const [urgentRequest, setUrgentRequest] = useState([]);
+  const [averageTime, setAverageTime] = useState(0);
 
-export default function Home() {
+  useEffect(() => {
+    if (data) {
+      const open = data.filter(
+        (request: RequestObject) => request.status === "OPEN"
+      );
+      setOpenRequest(open);
+      const urgent = data.filter((request: RequestObject) =>
+        ["URGENT", "EMERGENCY"].includes(request.urgency)
+      );
+      setUrgentRequest(urgent);
+      const average = data.reduce(
+        (acc: number, request: RequestObject) => acc + request.timeToResolve,
+        0
+      );
+      setAverageTime(Math.round((average / data.length) * 10) / 10);
+    }
+  }, [data]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
   return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <section className="w-full h-full lg:w-[46dvw] relative lg:flex lg:flex-col">
+      <div className="w-full flex justify-center gap-5 px-4">
+        <StatsCard title="Open Requests" value={openRequest.length} />
+        <StatsCard title="Urgent Requests" value={urgentRequest.length} />
+        <StatsCard title="Average time (days) to resolve" value={averageTime} />
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <ul className="w-full flex flex-col justify-center items-center pt-5 gap-5">
+        {data &&
+          data.map((request: RequestObject) => {
+            return (
+              <li key={request.id} className="w-full px-4">
+                <RequestCard request={request} />
+              </li>
+            );
+          })}
+      </ul>
+
+      <Link
+        href={"/create"}
+        className="fixed lg:relative bottom-8 right-4 lg:bottom-0 lg:right-0 lg:ml-[42dvw] lg:mt-4 lg:pb-6"
+      >
+        <button className="rounded-full bg-sdt-primary w-[3rem] h-[3rem] flex justify-center items-center">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <path
+              d="M1 10H10M19 10H10M10 10V1M10 10V19"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          </svg>
+        </button>
+      </Link>
+    </section>
   );
-}
+};
+
+export default RequestList;
