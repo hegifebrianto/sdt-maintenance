@@ -8,7 +8,8 @@ import Link from "next/link";
 
 const RequestList = () => {
   const { data, loading, error } = useRequests();
-
+  const STATUS = { OPEN: "OPEN" };
+  const URGENTLY = { URGENT: "URGENT",EMERGENCY:"EMERGENCY" };
   const [openRequest, setOpenRequest] = useState([]);
   const [urgentRequest, setUrgentRequest] = useState([]);
   const [averageTime, setAverageTime] = useState(0);
@@ -16,11 +17,11 @@ const RequestList = () => {
   useEffect(() => {
     if (data) {
       const open = data.filter(
-        (request: RequestObject) => request.status === "OPEN"
+        (request: RequestObject) => request.status === STATUS.OPEN
       );
       setOpenRequest(open);
       const urgent = data.filter((request: RequestObject) =>
-        ["URGENT", "EMERGENCY"].includes(request.urgency)
+        [URGENTLY.URGENT, URGENTLY.EMERGENCY].includes(request.urgency)
       );
       setUrgentRequest(urgent);
       const average = data.reduce(
