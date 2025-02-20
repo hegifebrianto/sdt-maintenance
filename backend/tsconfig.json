@@ -7,7 +7,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
-    "rootDir": ".", // Mengatur root ke direktori utama proyek
+    "rootDir": ".",
     "typeRoots": ["./node_modules/@types"],
     "moduleResolution": "node",
     "resolveJsonModule": true
