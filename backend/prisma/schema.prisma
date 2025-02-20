@@ -1,0 +1,36 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum Status
+enum Status {
+  OPEN
+  RESOLVED
+}
+
+// Enum Urgency
+enum Urgency {
+  NONE_URGENT
+  LESS_URGENT
+  URGENT
+  EMERGENCY
+}
+
+// Model MaintenanceRequest
+model MaintenanceRequest {
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String?
+  status        Status    @default(OPEN)
+  urgency       Urgency   @default(NONE_URGENT)
+  createdAt     DateTime  @default(now())
+  resolvedAt    DateTime?
+  timeToResolve Float?
+}

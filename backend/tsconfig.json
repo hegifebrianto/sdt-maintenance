@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "rootDir": ".", // Mengatur root ke direktori utama proyek
+    "typeRoots": ["./node_modules/@types"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  },
+  "include": ["src", "prisma/seed.ts"],
+  "exclude": ["node_modules", "dist"]
+}
